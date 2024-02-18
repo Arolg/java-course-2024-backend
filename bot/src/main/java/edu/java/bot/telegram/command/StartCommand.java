@@ -5,7 +5,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StartCommand implements Command{
+public class StartCommand implements Command {
     private final String name = "/start";
     private final String description = "Зарегистрировать пользователя";
 
@@ -33,7 +33,7 @@ public class StartCommand implements Command{
             username
         );
 
-        return new SendMessage(chatId,welcomeMessage
+        return new SendMessage(chatId, welcomeMessage
                 + "Ты ___успешно_\r__ зарегистрирован\\! "
                 + "Можешь начинать отслеживать ссылки\\!");
 

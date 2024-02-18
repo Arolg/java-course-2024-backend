@@ -6,14 +6,18 @@ import edu.java.bot.telegram.command.ListCommand;
 import edu.java.bot.telegram.command.StartCommand;
 import edu.java.bot.telegram.command.TrackCommand;
 import edu.java.bot.telegram.command.UntrackCommand;
+import java.util.List;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.util.List;
+
+
 @Getter
 @Component
 public class BotCommandList {
+
     private final List<Command> commands;
+
     @Autowired
     public BotCommandList(
         StartCommand start,
@@ -22,7 +26,7 @@ public class BotCommandList {
         UntrackCommand untrack,
         ListCommand list
     ) {
-        this.commands = List.of(start, help, track, untrack, list);;
+        this.commands = List.of(start, help, track, untrack, list);
     }
 
 }

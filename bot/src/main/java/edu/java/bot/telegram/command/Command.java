@@ -14,8 +14,8 @@ public interface  Command {
     default boolean checkFormat(String command) {
         return command != null && command.equals(command());
     }
-    default boolean supports(Update update)
-    {
+
+    default boolean supports(Update update) {
         return update.message().text() != null && update.message().text().equals(command());
     }
 

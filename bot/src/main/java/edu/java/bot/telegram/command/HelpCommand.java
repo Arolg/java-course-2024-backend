@@ -3,16 +3,18 @@ package edu.java.bot.telegram.command;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.telegram.BotCommandList;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import java.util.stream.Collectors;
 
 @Component
-public class HelpCommand implements Command{
+public class HelpCommand implements Command {
     private final String name = "/help";
     private final String description = "Вывести окно с командами";
+
     private final ApplicationContext context;
+
     @Autowired
     public HelpCommand(ApplicationContext context) {
         this.context = context;
@@ -43,7 +45,7 @@ public class HelpCommand implements Command{
         } else {
             return new SendMessage(chatId, "*Список команд:*\n\n" + commandHandlers.stream()
                 .map((h) -> String.format("*%s* \\-\\> _%s_", h.command(), h.description()))
-                .collect(Collectors.joining("\n"))) ;
+                .collect(Collectors.joining("\n")));
         }
     }
 }

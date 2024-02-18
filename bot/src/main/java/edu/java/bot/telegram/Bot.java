@@ -9,12 +9,11 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
-import com.pengrad.telegrambot.response.SendResponse;
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.telegram.command.Command;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.util.List;
 
 @Component
 public class Bot implements AutoCloseable, UpdatesListener {
@@ -28,6 +27,7 @@ public class Bot implements AutoCloseable, UpdatesListener {
         this.token = config.telegramToken();
         this.commandHandlers = commandList.getCommands();
     }
+
     public SetMyCommands createMenu(List<Command> handlers) {
         return new SetMyCommands(
             handlers.stream()
@@ -36,12 +36,12 @@ public class Bot implements AutoCloseable, UpdatesListener {
         );
     }
 
-    <T extends BaseRequest<T, R>, R extends BaseResponse> BaseResponse execute(BaseRequest<T, R> request){
+    <T extends BaseRequest<T, R>, R extends BaseResponse> BaseResponse execute(BaseRequest<T, R> request) {
         return bot.execute(request);
     }
 
 
-    public void start(){
+    public void start() {
         bot = new TelegramBot(token);
         bot.execute(createMenu(commandHandlers));
         bot.setUpdatesListener(updates -> {
@@ -72,6 +72,7 @@ public class Bot implements AutoCloseable, UpdatesListener {
     public void close() throws Exception {
         bot.shutdown();
     }
+
     public SendMessage handleUpdate(Update update) {
         Command command = null;
         for (var h : commandHandlers) {

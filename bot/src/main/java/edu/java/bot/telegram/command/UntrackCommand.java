@@ -5,7 +5,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UntrackCommand implements Command{
+public class UntrackCommand implements Command {
     private final String name = "/untrack";
     private final String description = "Прекратить отслеживание ссылки";
 

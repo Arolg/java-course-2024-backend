@@ -5,9 +5,10 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TrackCommand implements Command{
+public class TrackCommand implements Command {
     private final String name = "/track";
     private final String description = "Начать отслеживание ссылки";
+
     @Override
     public String command() {
         return name;

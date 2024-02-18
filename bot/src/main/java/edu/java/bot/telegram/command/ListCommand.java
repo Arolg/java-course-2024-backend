@@ -2,12 +2,12 @@ package edu.java.bot.telegram.command;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
-public class ListCommand implements Command{
+public class ListCommand implements Command {
     private final String name = "/list";
     private final String description = "Вывести список отслеживаемых ссылок";
 
@@ -29,12 +29,12 @@ public class ListCommand implements Command{
         List<String> trackedLinks = new ArrayList<>();
         String username = update.message().chat().username();
         Long chatId = update.message().chat().id();
-        if (trackedLinks.isEmpty()){
+        if (trackedLinks.isEmpty()) {
             return new SendMessage(chatId,
                 "Список отслеживаемых ссылок пуст");
         } else {
             StringBuilder message = new StringBuilder("Список отслеживаемях ссылок");
-            for (String link : trackedLinks){
+            for (String link : trackedLinks) {
                 message.append(link);
             }
             return new SendMessage(chatId, message.toString());
