@@ -11,10 +11,6 @@ public interface  Command {
 
     SendMessage handle(Update update);
 
-    default boolean checkFormat(String command) {
-        return command != null && command.equals(command());
-    }
-
     default boolean supports(Update update) {
         return update.message().text() != null && update.message().text().equals(command());
     }

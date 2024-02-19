@@ -1,28 +1,88 @@
 package edu.java.bot.telegram.command;
 
-import org.junit.jupiter.api.Assertions;
+import com.pengrad.telegrambot.model.Chat;
+import com.pengrad.telegrambot.model.Message;
+import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mockStatic;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ListCommandTest {
-    @Test
-    void generateAnswerTest() {
-        try {
-            Method method = ListCommand.class.getDeclaredMethod("generateAnswer");
-            method.setAccessible(true);
-            mockStatic(Command.class);
+    static Update update;
+    static Message message;
+    static Chat chat;
 
-            ListCommand list = new ListCommand();
-            String result = (String) method.invoke(list);
-            Assertions.assertEquals("Список отслеживаемых ссылок пуст", result);
+    @BeforeAll
+    static void generateAnswerTest() {
+        update = mock(Update.class);
+        message = mock(Message.class);
+        chat = mock(Chat.class);
 
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        when(update.message()).thenReturn(message);
+        when(update.message().chat()).thenReturn(chat);
+        when(chat.id()).thenReturn(1L);
+        when(message.text()).thenReturn("/list");
+
     }
+    @Test
+    void emptyListTest() {
+        ListCommand listCommand = new ListCommand();
+        SendMessage response = listCommand.handle(update);
+        var expectedAnswer = new SendMessage(1L, "Список отслеживаемых ссылок пуст");
+        assertThat(response)
+            .usingRecursiveComparison()
+            .isEqualTo(expectedAnswer);
+    }
+
+    @Test
+    public void getCommandNameTest() {
+        var listCommand = new ListCommand();
+
+        String actualCommandName = listCommand.command();
+
+        String expectedCommandName = "/list";
+        assertThat(actualCommandName)
+            .isEqualTo(expectedCommandName);
+    }
+
+    @Test
+    public void getCommandDescriptionTest() {
+        var listCommand = new ListCommand();
+
+        String actualCommandDescription = listCommand.description();
+
+        String expectedCommandDescription = "Вывести список отслеживаемых ссылок";
+        assertThat(actualCommandDescription)
+            .isEqualTo(expectedCommandDescription);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "invalid",
+        "/helpwithoutspace",
+        "/start withspace",
+        "/heal",
+        "help",
+        "\"\""
+    })
+    public void invalidCommandTest(String invalidCommand) {
+        var listCommand = new ListCommand();
+        var badUpdate = mock(Update.class);
+        var message = mock(Message.class);
+        when(badUpdate.message()).thenReturn(message);
+        when(message.text()).thenReturn(invalidCommand);
+
+        assertThatThrownBy(() -> listCommand.handle(badUpdate))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Invalid command format!");
+    }
+
 
 }
