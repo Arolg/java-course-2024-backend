@@ -11,21 +11,29 @@ import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.telegram.command.Command;
+import java.net.URL;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
+@Slf4j
 public class Bot implements AutoCloseable, UpdatesListener {
     private final String token;
     private TelegramBot bot;
-    private final List<Command> commandHandlers;
 
-    @Autowired
-    public Bot(ApplicationConfig config, BotCommandList commandList) {
+    private final List<Command> commandHandlers;
+    private final BotRepository botRepository;
+    public Bot(ApplicationConfig config, List<Command> commandList) {
 
         this.token = config.telegramToken();
-        this.commandHandlers = commandList.getCommands();
+        this.botRepository = new BotRepository();
+        this.bot = new TelegramBot(token);
+        this.commandHandlers = commandList;
+        bot.execute(createMenu(commandHandlers));
     }
 
     public SetMyCommands createMenu(List<Command> handlers) {
@@ -42,10 +50,7 @@ public class Bot implements AutoCloseable, UpdatesListener {
 
 
     public void start() {
-        bot = new TelegramBot(token);
-        bot.execute(createMenu(commandHandlers));
         bot.setUpdatesListener(updates -> {
-
             process(updates);
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
         });
@@ -81,9 +86,7 @@ public class Bot implements AutoCloseable, UpdatesListener {
             }
         }
         if (command != null) {
-            return command.handle(update)
-                .parseMode(ParseMode.MarkdownV2)
-                .disableWebPagePreview(true);
+            return command.handle(update);
         } else {
             return new SendMessage(
                 update.message().chat().id(),

@@ -2,14 +2,22 @@ package edu.java.bot.telegram.command;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import edu.java.bot.telegram.BotRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ListCommand implements Command {
     private final String name = "/list";
     private final String description = "Вывести список отслеживаемых ссылок";
+    private final BotRepository repository;
+    public ListCommand(BotRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public String command() {
@@ -26,15 +34,15 @@ public class ListCommand implements Command {
         if (!supports(update)) {
             throw new IllegalArgumentException("Invalid command format!");
         }
-        List<String> trackedLinks = new ArrayList<>();
         String username = update.message().chat().username();
         Long chatId = update.message().chat().id();
+        List<URL> trackedLinks = repository.listLink(chatId);
         if (trackedLinks.isEmpty()) {
             return new SendMessage(chatId,
                 "Список отслеживаемых ссылок пуст");
         } else {
             StringBuilder message = new StringBuilder("Список отслеживаемях ссылок");
-            for (String link : trackedLinks) {
+            for (var link : trackedLinks) {
                 message.append(link);
             }
             return new SendMessage(chatId, message.toString());

@@ -2,9 +2,11 @@ package edu.java.bot.telegram.command;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.telegram.BotCommandList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -12,12 +14,14 @@ import org.springframework.stereotype.Component;
 public class HelpCommand implements Command {
     private final String name = "/help";
     private final String description = "Вывести окно с командами";
-
-    private final ApplicationContext context;
+    //@Autowired
+    @Qualifier("command")
+    private final List<Command> commands;
 
     @Autowired
-    public HelpCommand(ApplicationContext context) {
-        this.context = context;
+    public HelpCommand(List<Command> commands) {
+        this.commands = commands;
+
     }
 
     @Override
@@ -39,11 +43,11 @@ public class HelpCommand implements Command {
         StringBuilder messageBuilder = new StringBuilder("Список команд:\n");
         //String username = update.message().chat().username();
         Long chatId = update.message().chat().id();
-        var commandHandlers = context.getBean(BotCommandList.class).getCommands();
-        if (commandHandlers.isEmpty()) {
+        //var commands =
+        if (commands.isEmpty()) {
             return  new SendMessage(chatId, "*Список команд пустой!*");
         } else {
-            return new SendMessage(chatId, "*Список команд:*\n\n" + commandHandlers.stream()
+            return new SendMessage(chatId, "*Список команд:*\n\n" + commands.stream()
                 .map((h) -> String.format("*%s* \\-\\> _%s_", h.command(), h.description()))
                 .collect(Collectors.joining("\n")));
         }

@@ -35,14 +35,12 @@ class BotTest {
     static Message message;
     static Chat chat;
     static List<Command> handlers;
-    static ApplicationContext context;
 
     @BeforeAll
     static void startBot() {
         update = mock(Update.class);
         message = mock(Message.class);
         chat = mock(Chat.class);
-        context = mock(ApplicationContext.class);
         when(update.message()).thenReturn(message);
 
         var ctx = SpringApplication.run(BotApplication.class);
@@ -50,24 +48,23 @@ class BotTest {
         bot = ctx.getBean(Bot.class);
         bot.start();
 
-        var startCommandHandler = new StartCommand();
-        var helpCommandHandler = new HelpCommand(mock(ApplicationContext.class));
-        var listCommandHandler = new ListCommand();
-        var trackCommandHandler = new TrackCommand();
-        var untrackCommandHandler = new UntrackCommand();
-        handlers = List.of(
-            startCommandHandler,
-            helpCommandHandler,
-            trackCommandHandler,
-            untrackCommandHandler,
-            listCommandHandler
-        );
 
     }
 
 
     @Test
     public void createMenuTest(){
+        var startCommandHandler = new StartCommand();
+        var listCommandHandler = new ListCommand();
+        var trackCommandHandler = new TrackCommand();
+        var untrackCommandHandler = new UntrackCommand();
+        handlers = List.of(
+            listCommandHandler,
+            startCommandHandler,
+            trackCommandHandler,
+            untrackCommandHandler
+        );
+        var helpCommandHandler = new HelpCommand(handlers);
         SetMyCommands actualRequest = bot.createMenu(handlers);
 
         SetMyCommands expectedRequest = new SetMyCommands(
@@ -129,7 +126,7 @@ class BotTest {
         try {
 
 
-            HelpCommand helpCommand = new HelpCommand(context);
+            HelpCommand helpCommand = new HelpCommand(handlers);
 
 
             SendMessage response = helpCommand.handle(update);

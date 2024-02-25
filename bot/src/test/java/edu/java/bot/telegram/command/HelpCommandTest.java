@@ -4,7 +4,7 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.telegram.BotCommandList;
+
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -20,32 +20,23 @@ public class HelpCommandTest {
     static Update update;
     static Message message;
     static Chat chat;
-    static ApplicationContext context;
+
 
 
     @BeforeAll
     static void generateAnswerTest() {
         try {
 
-            var startCommandHandler = new StartCommand();
-            var helpCommandHandler = new HelpCommand(mock(ApplicationContext.class));
-            var listCommandHandler = new ListCommand();
-            var trackCommandHandler = new TrackCommand();
-            var untrackCommandHandler = new UntrackCommand();
-            BotCommandList commands = new BotCommandList(
-                startCommandHandler,
-                helpCommandHandler,
-                trackCommandHandler,
-                untrackCommandHandler,
-                listCommandHandler
-            );
+//            var startCommandHandler = new StartCommand();
+//            var helpCommandHandler = new HelpCommand();
+//            var listCommandHandler = new ListCommand();
+//            var trackCommandHandler = new TrackCommand();
+//            var untrackCommandHandler = new UntrackCommand();
 
             update = mock(Update.class);
             message = mock(Message.class);
             chat = mock(Chat.class);
-            context = mock(ApplicationContext.class);
 
-            when(context.getBean(BotCommandList.class)).thenReturn(commands);
             when(update.message()).thenReturn(message);
             when(update.message().chat()).thenReturn(chat);
             when(chat.id()).thenReturn(1L);
@@ -60,19 +51,29 @@ public class HelpCommandTest {
 
     @Test
     void allCommandsTest() {
+        var startCommandHandler = new StartCommand();
+        var listCommandHandler = new ListCommand();
+        var trackCommandHandler = new TrackCommand();
+        var untrackCommandHandler = new UntrackCommand();
+        var handlers = List.of(
+            listCommandHandler,
+            startCommandHandler,
+            trackCommandHandler,
+            untrackCommandHandler
+        );
+        var helpCommand = new HelpCommand(handlers);
         when(update.message().text()).thenReturn("/help");
-        HelpCommand helpCommand = new HelpCommand(context);
+
         SendMessage response = helpCommand.handle(update);
-
-
         var expectedAnswer = new SendMessage(
             1L,
             "*Список команд:*\n\n"
+                + "*/list* \\-\\> _Вывести список отслеживаемых ссылок_\n"
                 + "*/start* \\-\\> _Зарегистрировать пользователя_\n"
-                + "*/help* \\-\\> _Вывести окно с командами_\n"
                 + "*/track* \\-\\> _Начать отслеживание ссылки_\n"
-                + "*/untrack* \\-\\> _Прекратить отслеживание ссылки_\n"
-                + "*/list* \\-\\> _Вывести список отслеживаемых ссылок_");
+                + "*/untrack* \\-\\> _Прекратить отслеживание ссылки_");
+
+
 
         assertThat(response)
             .usingRecursiveComparison()
