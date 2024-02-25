@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.telegram.BotRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,7 +34,8 @@ class ListCommandTest {
     }
     @Test
     void emptyListTest() {
-        ListCommand listCommand = new ListCommand();
+        var repository = new BotRepository();
+        ListCommand listCommand = new ListCommand(repository);
         SendMessage response = listCommand.handle(update);
         var expectedAnswer = new SendMessage(1L, "Список отслеживаемых ссылок пуст");
         assertThat(response)
@@ -43,7 +45,8 @@ class ListCommandTest {
 
     @Test
     public void getCommandNameTest() {
-        var listCommand = new ListCommand();
+        var repository = new BotRepository();
+        ListCommand listCommand = new ListCommand(repository);
 
         String actualCommandName = listCommand.command();
 
@@ -54,7 +57,8 @@ class ListCommandTest {
 
     @Test
     public void getCommandDescriptionTest() {
-        var listCommand = new ListCommand();
+        var repository = new BotRepository();
+        ListCommand listCommand = new ListCommand(repository);
 
         String actualCommandDescription = listCommand.description();
 
@@ -73,7 +77,8 @@ class ListCommandTest {
         "\"\""
     })
     public void invalidCommandTest(String invalidCommand) {
-        var listCommand = new ListCommand();
+        var repository = new BotRepository();
+        ListCommand listCommand = new ListCommand(repository);
         var badUpdate = mock(Update.class);
         var message = mock(Message.class);
         when(badUpdate.message()).thenReturn(message);

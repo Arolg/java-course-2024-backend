@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.telegram.BotRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,7 +35,8 @@ class TrackCommandTest {
     }
     @Test
     void newUserTest() {
-        TrackCommand trackCommand = new TrackCommand();
+        var repository = new BotRepository();
+        TrackCommand trackCommand = new TrackCommand(repository);
         SendMessage response = trackCommand.handle(update);
         var expectedAnswer = new SendMessage(1L, "Начал отслеживание ссылки");
         assertThat(response)
@@ -44,7 +46,8 @@ class TrackCommandTest {
 
     @Test
     public void getCommandNameTest() {
-        TrackCommand trackCommand = new TrackCommand();
+        var repository = new BotRepository();
+        TrackCommand trackCommand = new TrackCommand(repository);
 
         String actualCommandName = trackCommand.command();
 
@@ -55,7 +58,8 @@ class TrackCommandTest {
 
     @Test
     public void getCommandDescriptionTest() {
-        TrackCommand trackCommand = new TrackCommand();
+        var repository = new BotRepository();
+        TrackCommand trackCommand = new TrackCommand(repository);
 
         String actualCommandDescription = trackCommand.description();
 
@@ -74,7 +78,8 @@ class TrackCommandTest {
         "\"\""
     })
     public void invalidCommandTest(String invalidCommand) {
-        TrackCommand trackCommand = new TrackCommand();
+        var repository = new BotRepository();
+        TrackCommand trackCommand = new TrackCommand(repository);
         var badUpdate = mock(Update.class);
         var message = mock(Message.class);
         when(badUpdate.message()).thenReturn(message);

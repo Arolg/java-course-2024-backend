@@ -1,14 +1,14 @@
 package edu.java.bot.telegram;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Repository;
+
 @Repository
 public class BotRepository {
     private final Map<Long, List<URL>> memory = new HashMap<>();

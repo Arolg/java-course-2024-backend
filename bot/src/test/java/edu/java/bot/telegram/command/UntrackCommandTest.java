@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.telegram.BotRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,7 +36,8 @@ class UntrackCommandTest {
     }
     @Test
     void newUserTest() {
-        UntrackCommand untrackCommand = new UntrackCommand();
+        var repository = new BotRepository();
+        UntrackCommand untrackCommand = new UntrackCommand(repository);
         SendMessage response = untrackCommand.handle(update);
         var expectedAnswer = new SendMessage(1L, "Прекратил отслеживание ссылки");
         assertThat(response)
@@ -45,7 +47,8 @@ class UntrackCommandTest {
 
     @Test
     public void getCommandNameTest() {
-        UntrackCommand untrackCommand = new UntrackCommand();
+        var repository = new BotRepository();
+        UntrackCommand untrackCommand = new UntrackCommand(repository);
 
         String actualCommandName = untrackCommand.command();
 
@@ -56,7 +59,8 @@ class UntrackCommandTest {
 
     @Test
     public void getCommandDescriptionTest() {
-        UntrackCommand untrackCommand = new UntrackCommand();
+        var repository = new BotRepository();
+        UntrackCommand untrackCommand = new UntrackCommand(repository);
 
         String actualCommandDescription = untrackCommand.description();
 
@@ -75,7 +79,8 @@ class UntrackCommandTest {
         "\"\""
     })
     public void invalidCommandTest(String invalidCommand) {
-        UntrackCommand untrackCommand = new UntrackCommand();
+        var repository = new BotRepository();
+        UntrackCommand untrackCommand = new UntrackCommand(repository);
         var badUpdate = mock(Update.class);
         var message = mock(Message.class);
         when(badUpdate.message()).thenReturn(message);

@@ -22,6 +22,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -36,6 +38,7 @@ class BotTest {
     static Chat chat;
     static List<Command> handlers;
 
+
     @BeforeAll
     static void startBot() {
         update = mock(Update.class);
@@ -49,15 +52,17 @@ class BotTest {
         bot.start();
 
 
+
     }
 
 
     @Test
     public void createMenuTest(){
+        var repository = new BotRepository();
         var startCommandHandler = new StartCommand();
-        var listCommandHandler = new ListCommand();
-        var trackCommandHandler = new TrackCommand();
-        var untrackCommandHandler = new UntrackCommand();
+        var listCommandHandler = new ListCommand(repository);
+        var trackCommandHandler = new TrackCommand(repository);
+        var untrackCommandHandler = new UntrackCommand(repository);
         handlers = List.of(
             listCommandHandler,
             startCommandHandler,
@@ -92,14 +97,12 @@ class BotTest {
 
         var expectedAnswer = new SendMessage(
             1L,
-            "Привет, *TestUser*\\!\n\n"
-                + "Я бот для ___отслеживания обновлений_\r__ множества веб\\-ресурсов, которые тебе интересны\\! "
-                + "Для получения списка доступных команд открой ___меню_\r__ или введи /help\\.\n\n"
-                + "Ты ___успешно_\r__ зарегистрирован\\! "
-                + "Можешь начинать отслеживать ссылки\\!"
-        )
-            .parseMode(ParseMode.MarkdownV2)
-            .disableWebPagePreview(true);
+            "Привет, %TestUser!\n\n"
+                + "Я бот для отслеживания обновлений множества веб-ресурсов, которые тебе интересны! "
+                + "Для получения списка доступных команд открой меню или введи /help.\n\n"
+                + "Ты успешно зарегистрирован!"
+                + " Можешь начинать отслеживать ссылки!"
+        );
         assertThat(actualAnswer)
             .usingRecursiveComparison()
             .isEqualTo(expectedAnswer);
@@ -132,22 +135,11 @@ class BotTest {
             SendMessage response = helpCommand.handle(update);
 
 
-
-
-//            ApplicationContext context = mock(ApplicationContext.class);
-//            Method method = HelpCommand.class.getDeclaredMethod("generateAnswer");
-//            method.setAccessible(true);
-//            mockStatic(Command.class);
-//
-//            HelpCommand help = new HelpCommand(context);
-//            String result = (String) method.invoke(help);
-
-            var expectedAnswer = "*Список команд:*\n\n"
-                + "*/start* \\-\\> _Зарегистрировать пользователя_\n"
-                + "*/help* \\-\\> _Вывести окно с командами_\n"
-                + "*/track* \\-\\> _Начать отслеживание ссылки_\n"
-                + "*/untrack* \\-\\> _Прекратить отслеживание ссылки_\n"
-                + "*/list* \\-\\> _Вывести список отслеживаемых ссылок_";
+            var expectedAnswer = "Список команд:\n\n"
+                + "/list -> Вывести список отслеживаемых ссылок\n"
+                + "/start -> Зарегистрировать пользователя\n"
+                + "/track -> Начать отслеживание ссылки\n"
+                + "/untrack -> Прекратить отслеживание ссылки";
 
             AssertionsForClassTypes.assertThat(response)
                 .isEqualTo(expectedAnswer);

@@ -5,7 +5,9 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 
+import java.util.ArrayList;
 import java.util.List;
+import edu.java.bot.telegram.BotRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,13 +28,6 @@ public class HelpCommandTest {
     @BeforeAll
     static void generateAnswerTest() {
         try {
-
-//            var startCommandHandler = new StartCommand();
-//            var helpCommandHandler = new HelpCommand();
-//            var listCommandHandler = new ListCommand();
-//            var trackCommandHandler = new TrackCommand();
-//            var untrackCommandHandler = new UntrackCommand();
-
             update = mock(Update.class);
             message = mock(Message.class);
             chat = mock(Chat.class);
@@ -51,10 +46,11 @@ public class HelpCommandTest {
 
     @Test
     void allCommandsTest() {
+        var repository = new BotRepository();
         var startCommandHandler = new StartCommand();
-        var listCommandHandler = new ListCommand();
-        var trackCommandHandler = new TrackCommand();
-        var untrackCommandHandler = new UntrackCommand();
+        var listCommandHandler = new ListCommand(repository);
+        var trackCommandHandler = new TrackCommand(repository);
+        var untrackCommandHandler = new UntrackCommand(repository);
         var handlers = List.of(
             listCommandHandler,
             startCommandHandler,
@@ -67,11 +63,11 @@ public class HelpCommandTest {
         SendMessage response = helpCommand.handle(update);
         var expectedAnswer = new SendMessage(
             1L,
-            "*Список команд:*\n\n"
-                + "*/list* \\-\\> _Вывести список отслеживаемых ссылок_\n"
-                + "*/start* \\-\\> _Зарегистрировать пользователя_\n"
-                + "*/track* \\-\\> _Начать отслеживание ссылки_\n"
-                + "*/untrack* \\-\\> _Прекратить отслеживание ссылки_");
+            "Список команд:\n\n"
+                + "/list -> Вывести список отслеживаемых ссылок\n"
+                + "/start -> Зарегистрировать пользователя\n"
+                + "/track -> Начать отслеживание ссылки\n"
+                + "/untrack -> Прекратить отслеживание ссылки");
 
 
 
@@ -91,7 +87,18 @@ public class HelpCommandTest {
         "\"\""
     })
     public void invalidCommandTest(String invalidCommand) {
-        var helpCommandHandler = new HelpCommand(context);
+        var repository = new BotRepository();
+        var startCommandHandler = new StartCommand();
+        var listCommandHandler = new ListCommand(repository);
+        var trackCommandHandler = new TrackCommand(repository);
+        var untrackCommandHandler = new UntrackCommand(repository);
+        var handlers = List.of(
+            listCommandHandler,
+            startCommandHandler,
+            trackCommandHandler,
+            untrackCommandHandler
+        );
+        var helpCommandHandler = new HelpCommand(handlers);
         var badUpdate = mock(Update.class);
         var message = mock(Message.class);
         when(badUpdate.message()).thenReturn(message);
@@ -106,16 +113,13 @@ public class HelpCommandTest {
 
     @Test
     public void emptyCommandsTest() {
-        var emptyContext = mock(ApplicationContext.class);
-        BotCommandList emptyCommands = mock(BotCommandList.class);
-        when(emptyContext.getBean(BotCommandList.class)).thenReturn(emptyCommands);
-        when(emptyCommands.getCommands()).thenReturn(List.of());
+        List<Command> emptyContext = new ArrayList<>();
         var helpCommandHandler = new HelpCommand(emptyContext);
 
         var actualAnswer = helpCommandHandler.handle(update);
 
         var expectedAnswer = new SendMessage(
-            1L,"*Список команд пустой!*");
+            1L,"Список команд пустой!");
         assertThat(actualAnswer)
             .usingRecursiveComparison()
             .isEqualTo(expectedAnswer);
@@ -123,7 +127,18 @@ public class HelpCommandTest {
 
     @Test
     public void getCommandNameTest() {
-        var helpCommandHandler = new HelpCommand(context);
+        var repository = new BotRepository();
+        var startCommandHandler = new StartCommand();
+        var listCommandHandler = new ListCommand(repository);
+        var trackCommandHandler = new TrackCommand(repository);
+        var untrackCommandHandler = new UntrackCommand(repository);
+        var handlers = List.of(
+            listCommandHandler,
+            startCommandHandler,
+            trackCommandHandler,
+            untrackCommandHandler
+        );
+        var helpCommandHandler = new HelpCommand(handlers);
 
         String actualCommandName = helpCommandHandler.command();
 
@@ -134,7 +149,18 @@ public class HelpCommandTest {
 
     @Test
     public void getCommandDescriptionTest() {
-        var helpCommandHandler = new HelpCommand(context);
+        var repository = new BotRepository();
+        var startCommandHandler = new StartCommand();
+        var listCommandHandler = new ListCommand(repository);
+        var trackCommandHandler = new TrackCommand(repository);
+        var untrackCommandHandler = new UntrackCommand(repository);
+        var handlers = List.of(
+            listCommandHandler,
+            startCommandHandler,
+            trackCommandHandler,
+            untrackCommandHandler
+        );
+        var helpCommandHandler = new HelpCommand(handlers);
 
         String actualCommandDescription = helpCommandHandler.description();
 
@@ -152,7 +178,18 @@ public class HelpCommandTest {
         " , false"
     })
     public void checkFormatTest(String command, boolean expectedCheckResult) {
-        var helpCommandHandler = new HelpCommand(context);
+        var repository = new BotRepository();
+        var startCommandHandler = new StartCommand();
+        var listCommandHandler = new ListCommand(repository);
+        var trackCommandHandler = new TrackCommand(repository);
+        var untrackCommandHandler = new UntrackCommand(repository);
+        var handlers = List.of(
+            listCommandHandler,
+            startCommandHandler,
+            trackCommandHandler,
+            untrackCommandHandler
+        );
+        var helpCommandHandler = new HelpCommand(handlers);
         when(update.message().text()).thenReturn(command);
 
         boolean actualCheckResult = helpCommandHandler.supports(update);
