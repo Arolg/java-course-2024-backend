@@ -1,4 +1,7 @@
 app:
+  api:
+    github-base-url: https://api.github.com
+    stackoverflow-base-url: https://api.stackexchange.com
   scheduler:
     enable: true
     interval: 10s
