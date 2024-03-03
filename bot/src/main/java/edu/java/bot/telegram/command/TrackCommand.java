@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +15,7 @@ public class TrackCommand implements Command {
     private final String name = "/track";
     private final String description = "Начать отслеживание ссылки";
     private final BotRepository repository;
-
+    @Autowired
     public TrackCommand(BotRepository repository) {
         this.repository = repository;
     }

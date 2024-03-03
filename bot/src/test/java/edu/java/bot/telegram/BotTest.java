@@ -23,8 +23,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,7 +38,19 @@ class BotTest {
     static Update update;
     static Message message;
     static Chat chat;
-    static List<Command> handlers;
+
+    //static BotRepository repository = new BotRepository();
+    static StartCommand startCommandHandler = new StartCommand(mock(BotRepository.class));
+    static ListCommand listCommandHandler = new ListCommand(mock(BotRepository.class));
+    static TrackCommand trackCommandHandler = new TrackCommand(mock(BotRepository.class));
+    static UntrackCommand untrackCommandHandler = new UntrackCommand(mock(BotRepository.class));
+    static List<Command> handlers = List.of(
+    listCommandHandler,
+    startCommandHandler,
+    trackCommandHandler,
+    untrackCommandHandler
+        );
+    static HelpCommand helpCommandHandler = new HelpCommand(handlers);
 
 
     @BeforeAll
@@ -58,26 +72,14 @@ class BotTest {
 
     @Test
     public void createMenuTest(){
-        var repository = new BotRepository();
-        var startCommandHandler = new StartCommand();
-        var listCommandHandler = new ListCommand(repository);
-        var trackCommandHandler = new TrackCommand(repository);
-        var untrackCommandHandler = new UntrackCommand(repository);
-        handlers = List.of(
-            listCommandHandler,
-            startCommandHandler,
-            trackCommandHandler,
-            untrackCommandHandler
-        );
-        var helpCommandHandler = new HelpCommand(handlers);
+
         SetMyCommands actualRequest = bot.createMenu(handlers);
 
         SetMyCommands expectedRequest = new SetMyCommands(
+            new BotCommand("/list", "Вывести список отслеживаемых ссылок"),
             new BotCommand("/start", "Зарегистрировать пользователя"),
-            new BotCommand("/help", "Вывести окно с командами"),
             new BotCommand("/track", "Начать отслеживание ссылки"),
-            new BotCommand("/untrack", "Прекратить отслеживание ссылки"),
-            new BotCommand("/list", "Вывести список отслеживаемых ссылок")
+            new BotCommand("/untrack", "Прекратить отслеживание ссылки")
         );
         assertThat(actualRequest)
             .usingRecursiveComparison()
@@ -85,7 +87,7 @@ class BotTest {
     }
 
     @Test
-    public void validHandleUpdateTest() {
+    public void newUserTest() {
         Chat chat = mock(Chat.class);
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/start");
@@ -97,7 +99,7 @@ class BotTest {
 
         var expectedAnswer = new SendMessage(
             1L,
-            "Привет, %TestUser!\n\n"
+            "Привет, TestUser!\n\n"
                 + "Я бот для отслеживания обновлений множества веб-ресурсов, которые тебе интересны! "
                 + "Для получения списка доступных команд открой меню или введи /help.\n\n"
                 + "Ты успешно зарегистрирован!"
@@ -107,6 +109,33 @@ class BotTest {
             .usingRecursiveComparison()
             .isEqualTo(expectedAnswer);
     }
+
+    @Test
+    public void olsUserTest() {
+        Chat chat = mock(Chat.class);
+        when(update.message()).thenReturn(message);
+        when(message.text()).thenReturn("/start");
+        when(message.chat()).thenReturn(chat);
+        when(chat.id()).thenReturn(1L);
+        when(chat.username()).thenReturn("TestUser");
+        Map<Long, List<URL>> memory = new HashMap<>();;
+        memory.put(1L, new ArrayList<>());
+        BotRepository repository = new BotRepository(memory);
+        StartCommand startCommand = new StartCommand(repository);
+        SendMessage actualAnswer = startCommand.handle(update);
+
+        var expectedAnswer = new SendMessage(
+            1L,
+            "Привет, TestUser!\n\n"
+                + "Я бот для отслеживания обновлений множества веб-ресурсов, которые тебе интересны! "
+                + "Для получения списка доступных команд открой меню или введи /help.\n\n"
+                + "Ты уже был зарегистрирован!"
+                + " Можешь начинать отслеживать ссылки!");
+        AssertionsForClassTypes.assertThat(actualAnswer)
+            .usingRecursiveComparison()
+            .isEqualTo(expectedAnswer);
+    }
+
     @Test
     public void unknownCommandHandleUpdateTest() {
         when(update.message()).thenReturn(message);

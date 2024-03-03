@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.telegram.BotRepository;
 import java.net.URL;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,7 +13,7 @@ public class ListCommand implements Command {
     private final String name = "/list";
     private final String description = "Вывести список отслеживаемых ссылок";
     private final BotRepository repository;
-
+    @Autowired
     public ListCommand(BotRepository repository) {
         this.repository = repository;
     }

@@ -23,6 +23,18 @@ public class HelpCommandTest {
     static Message message;
     static Chat chat;
 
+    static StartCommand startCommandHandler = new StartCommand(mock(BotRepository.class));
+    static ListCommand listCommandHandler = new ListCommand(mock(BotRepository.class));
+    static TrackCommand trackCommandHandler = new TrackCommand(mock(BotRepository.class));
+    static UntrackCommand untrackCommandHandler = new UntrackCommand(mock(BotRepository.class));
+    static List<Command> handlers = List.of(
+        listCommandHandler,
+        startCommandHandler,
+        trackCommandHandler,
+        untrackCommandHandler
+    );
+    static HelpCommand helpCommand = new HelpCommand(handlers);
+
 
 
     @BeforeAll
@@ -46,20 +58,7 @@ public class HelpCommandTest {
 
     @Test
     void allCommandsTest() {
-        var repository = new BotRepository();
-        var startCommandHandler = new StartCommand();
-        var listCommandHandler = new ListCommand(repository);
-        var trackCommandHandler = new TrackCommand(repository);
-        var untrackCommandHandler = new UntrackCommand(repository);
-        var handlers = List.of(
-            listCommandHandler,
-            startCommandHandler,
-            trackCommandHandler,
-            untrackCommandHandler
-        );
-        var helpCommand = new HelpCommand(handlers);
         when(update.message().text()).thenReturn("/help");
-
         SendMessage response = helpCommand.handle(update);
         var expectedAnswer = new SendMessage(
             1L,
@@ -68,9 +67,6 @@ public class HelpCommandTest {
                 + "/start -> Зарегистрировать пользователя\n"
                 + "/track -> Начать отслеживание ссылки\n"
                 + "/untrack -> Прекратить отслеживание ссылки");
-
-
-
         assertThat(response)
             .usingRecursiveComparison()
             .isEqualTo(expectedAnswer);
@@ -87,24 +83,11 @@ public class HelpCommandTest {
         "\"\""
     })
     public void invalidCommandTest(String invalidCommand) {
-        var repository = new BotRepository();
-        var startCommandHandler = new StartCommand();
-        var listCommandHandler = new ListCommand(repository);
-        var trackCommandHandler = new TrackCommand(repository);
-        var untrackCommandHandler = new UntrackCommand(repository);
-        var handlers = List.of(
-            listCommandHandler,
-            startCommandHandler,
-            trackCommandHandler,
-            untrackCommandHandler
-        );
-        var helpCommandHandler = new HelpCommand(handlers);
         var badUpdate = mock(Update.class);
         var message = mock(Message.class);
         when(badUpdate.message()).thenReturn(message);
         when(message.text()).thenReturn(invalidCommand);
-
-        assertThatThrownBy(() -> helpCommandHandler.handle(badUpdate))
+        assertThatThrownBy(() -> helpCommand.handle(badUpdate))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Invalid command format!");
     }
@@ -115,9 +98,7 @@ public class HelpCommandTest {
     public void emptyCommandsTest() {
         List<Command> emptyContext = new ArrayList<>();
         var helpCommandHandler = new HelpCommand(emptyContext);
-
         var actualAnswer = helpCommandHandler.handle(update);
-
         var expectedAnswer = new SendMessage(
             1L,"Список команд пустой!");
         assertThat(actualAnswer)
@@ -127,21 +108,7 @@ public class HelpCommandTest {
 
     @Test
     public void getCommandNameTest() {
-        var repository = new BotRepository();
-        var startCommandHandler = new StartCommand();
-        var listCommandHandler = new ListCommand(repository);
-        var trackCommandHandler = new TrackCommand(repository);
-        var untrackCommandHandler = new UntrackCommand(repository);
-        var handlers = List.of(
-            listCommandHandler,
-            startCommandHandler,
-            trackCommandHandler,
-            untrackCommandHandler
-        );
-        var helpCommandHandler = new HelpCommand(handlers);
-
-        String actualCommandName = helpCommandHandler.command();
-
+        String actualCommandName = helpCommand.command();
         String expectedCommandName = "/help";
         assertThat(actualCommandName)
             .isEqualTo(expectedCommandName);
@@ -149,21 +116,7 @@ public class HelpCommandTest {
 
     @Test
     public void getCommandDescriptionTest() {
-        var repository = new BotRepository();
-        var startCommandHandler = new StartCommand();
-        var listCommandHandler = new ListCommand(repository);
-        var trackCommandHandler = new TrackCommand(repository);
-        var untrackCommandHandler = new UntrackCommand(repository);
-        var handlers = List.of(
-            listCommandHandler,
-            startCommandHandler,
-            trackCommandHandler,
-            untrackCommandHandler
-        );
-        var helpCommandHandler = new HelpCommand(handlers);
-
-        String actualCommandDescription = helpCommandHandler.description();
-
+        String actualCommandDescription = helpCommand.description();
         String expectedCommandDescription = "Вывести окно с командами";
         assertThat(actualCommandDescription)
             .isEqualTo(expectedCommandDescription);
@@ -178,23 +131,8 @@ public class HelpCommandTest {
         " , false"
     })
     public void checkFormatTest(String command, boolean expectedCheckResult) {
-        var repository = new BotRepository();
-        var startCommandHandler = new StartCommand();
-        var listCommandHandler = new ListCommand(repository);
-        var trackCommandHandler = new TrackCommand(repository);
-        var untrackCommandHandler = new UntrackCommand(repository);
-        var handlers = List.of(
-            listCommandHandler,
-            startCommandHandler,
-            trackCommandHandler,
-            untrackCommandHandler
-        );
-        var helpCommandHandler = new HelpCommand(handlers);
         when(update.message().text()).thenReturn(command);
-
-        boolean actualCheckResult = helpCommandHandler.supports(update);
-
-
+        boolean actualCheckResult = helpCommand.supports(update);
         assertThat(actualCheckResult)
             .isEqualTo(expectedCheckResult);
     }
