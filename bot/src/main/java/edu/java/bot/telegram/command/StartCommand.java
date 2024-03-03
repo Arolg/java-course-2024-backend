@@ -11,6 +11,7 @@ public class StartCommand implements Command {
     private final String name = "/start";
     private final String description = "Зарегистрировать пользователя";
     private final BotRepository repository;
+
     @Autowired
     public StartCommand(BotRepository repository) {
         this.repository = repository;
@@ -39,15 +40,15 @@ public class StartCommand implements Command {
                 + "Для получения списка доступных команд открой меню или введи /help.\n\n",
             username
         );
-        if (repository.addUser(chatId)){
+
+        if (repository.addUser(chatId)) {
             return new SendMessage(chatId, welcomeMessage
                 + "Ты успешно зарегистрирован! "
                 + "Можешь начинать отслеживать ссылки!");
         } else {
 
             return new SendMessage(chatId, welcomeMessage
-                + "Ты уже был зарегистрирован! "
-                + "Можешь начинать отслеживать ссылки!");
+                + "Ты уже был зарегистрирован!");
 
         }
 

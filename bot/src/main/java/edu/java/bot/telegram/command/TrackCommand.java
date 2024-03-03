@@ -15,6 +15,7 @@ public class TrackCommand implements Command {
     private final String name = "/track";
     private final String description = "Начать отслеживание ссылки";
     private final BotRepository repository;
+
     @Autowired
     public TrackCommand(BotRepository repository) {
         this.repository = repository;

@@ -13,6 +13,7 @@ public class ListCommand implements Command {
     private final String name = "/list";
     private final String description = "Вывести список отслеживаемых ссылок";
     private final BotRepository repository;
+
     @Autowired
     public ListCommand(BotRepository repository) {
         this.repository = repository;

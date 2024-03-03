@@ -130,7 +130,7 @@ class BotTest {
                 + "Я бот для отслеживания обновлений множества веб-ресурсов, которые тебе интересны! "
                 + "Для получения списка доступных команд открой меню или введи /help.\n\n"
                 + "Ты уже был зарегистрирован!"
-                + " Можешь начинать отслеживать ссылки!");
+                );
         AssertionsForClassTypes.assertThat(actualAnswer)
             .usingRecursiveComparison()
             .isEqualTo(expectedAnswer);
