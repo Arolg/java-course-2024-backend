@@ -1,9 +1,10 @@
-package edu.java.configuration.client.response;
+package edu.java.scrapper.configuration.client.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Setter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import lombok.Setter;
+
 @Setter
 public class StackoverflowClientResponse implements HttpClientResponse {
     private OffsetDateTime lastUpdate;
@@ -14,14 +15,19 @@ public class StackoverflowClientResponse implements HttpClientResponse {
     public OffsetDateTime lastUpdate() {
         return lastUpdate;
     }
+
     public ArrayList<Event> events() {
         return events;
     }
+
     public record Event(
-        @JsonProperty("creation_date")
+        @JsonProperty("last_activity_date")
         OffsetDateTime time,
-        @JsonProperty("timeline_type")
-        String type
+        @JsonProperty("question_id")
+        long id,
+        @JsonProperty("answer_count")
+        long answerCount
+
     ) {
     }
 }

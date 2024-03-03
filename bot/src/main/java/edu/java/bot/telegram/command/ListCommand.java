@@ -2,12 +2,9 @@ package edu.java.bot.telegram.command;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import edu.java.bot.telegram.BotRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import java.net.URL;
+import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,6 +12,7 @@ public class ListCommand implements Command {
     private final String name = "/list";
     private final String description = "Вывести список отслеживаемых ссылок";
     private final BotRepository repository;
+
     public ListCommand(BotRepository repository) {
         this.repository = repository;
     }

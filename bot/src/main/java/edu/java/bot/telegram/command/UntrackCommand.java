@@ -3,19 +3,19 @@ package edu.java.bot.telegram.command;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.telegram.BotRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class UntrackCommand implements Command {
     private final String name = "/untrack";
     private final String description = "Прекратить отслеживание ссылки";
     private final BotRepository repository;
+
     @Autowired
     public UntrackCommand(BotRepository repository) {
         this.repository = repository;
@@ -30,6 +30,7 @@ public class UntrackCommand implements Command {
     public String description() {
         return description;
     }
+
     @Override
     public boolean supports(Update update) {
         String command = update.message().text();
@@ -55,7 +56,7 @@ public class UntrackCommand implements Command {
         URL url;
         try {
             url = new URI(parts[1]).toURL();
-        } catch (IllegalArgumentException | MalformedURLException | URISyntaxException ex){
+        } catch (IllegalArgumentException | MalformedURLException | URISyntaxException ex) {
             return new SendMessage(chatId, "Неверный формат URL. Попробуйте снова");
         }
 

@@ -1,33 +1,29 @@
 package edu.java.bot.telegram;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 @Repository
 public class BotRepository {
-    private final Map<Long, List<URL>> memory = new HashMap<>();
+    private final Map<Long, List<URL>> memory;
     private final String userNotFoundMessage = "User not found!";
     private final String nullArgsMessage = "Chat ID or URL is null!";
 
+    @Autowired
+    public BotRepository(Map<Long, List<URL>> memory) {
+        this.memory = memory;
+    }
+
 
     public boolean trackLink(Long chatId, URL url) {
-        List<URL> links = memory.getOrDefault(chatId, new ArrayList<>());
-
-        links.add(url);
-
-        memory.put(chatId, links);
-
         if (chatId == null || url == null) {
             throw new IllegalArgumentException(nullArgsMessage);
-        }
-        if (!memory.containsKey(chatId)) {
-            throw new IllegalArgumentException(userNotFoundMessage);
         }
 
         var trackingUrls = new ArrayList<>(memory.get(chatId));
@@ -54,7 +50,14 @@ public class BotRepository {
 
 
     public List<URL> listLink(Long chatId) {
-        return memory.getOrDefault(chatId, new ArrayList<>());
+        return memory.get(chatId);
     }
 
+    public boolean addUser(Long chatId) {
+        if (memory.containsKey(chatId)) {
+            return false;
+        }
+        memory.put(chatId, new ArrayList<>());
+        return true;
+    }
 }

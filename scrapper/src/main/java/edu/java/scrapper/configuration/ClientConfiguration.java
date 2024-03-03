@@ -1,9 +1,8 @@
-package edu.java.configuration;
+package edu.java.scrapper.configuration;
 
-import edu.java.configuration.client.GitHubClient;
-import edu.java.configuration.client.StackoverflowClient;
+import edu.java.scrapper.configuration.client.GitHubClient;
+import edu.java.scrapper.configuration.client.StackoverflowClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

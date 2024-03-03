@@ -1,4 +1,4 @@
-package edu.java.configuration.client.response;
+package edu.java.scrapper.configuration.client.dto.response;
 
 import java.time.OffsetDateTime;
 
