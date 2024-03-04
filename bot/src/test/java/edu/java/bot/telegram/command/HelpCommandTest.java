@@ -5,7 +5,9 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 
+import java.util.ArrayList;
 import java.util.List;
+import edu.java.bot.telegram.BotRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,18 +23,23 @@ public class HelpCommandTest {
     static Message message;
     static Chat chat;
 
+    static StartCommand startCommandHandler = new StartCommand(mock(BotRepository.class));
+    static ListCommand listCommandHandler = new ListCommand(mock(BotRepository.class));
+    static TrackCommand trackCommandHandler = new TrackCommand(mock(BotRepository.class));
+    static UntrackCommand untrackCommandHandler = new UntrackCommand(mock(BotRepository.class));
+    static List<Command> handlers = List.of(
+        listCommandHandler,
+        startCommandHandler,
+        trackCommandHandler,
+        untrackCommandHandler
+    );
+    static HelpCommand helpCommand = new HelpCommand(handlers);
+
 
 
     @BeforeAll
     static void generateAnswerTest() {
         try {
-
-//            var startCommandHandler = new StartCommand();
-//            var helpCommandHandler = new HelpCommand();
-//            var listCommandHandler = new ListCommand();
-//            var trackCommandHandler = new TrackCommand();
-//            var untrackCommandHandler = new UntrackCommand();
-
             update = mock(Update.class);
             message = mock(Message.class);
             chat = mock(Chat.class);
@@ -51,30 +58,15 @@ public class HelpCommandTest {
 
     @Test
     void allCommandsTest() {
-        var startCommandHandler = new StartCommand();
-        var listCommandHandler = new ListCommand();
-        var trackCommandHandler = new TrackCommand();
-        var untrackCommandHandler = new UntrackCommand();
-        var handlers = List.of(
-            listCommandHandler,
-            startCommandHandler,
-            trackCommandHandler,
-            untrackCommandHandler
-        );
-        var helpCommand = new HelpCommand(handlers);
         when(update.message().text()).thenReturn("/help");
-
         SendMessage response = helpCommand.handle(update);
         var expectedAnswer = new SendMessage(
             1L,
-            "*Список команд:*\n\n"
-                + "*/list* \\-\\> _Вывести список отслеживаемых ссылок_\n"
-                + "*/start* \\-\\> _Зарегистрировать пользователя_\n"
-                + "*/track* \\-\\> _Начать отслеживание ссылки_\n"
-                + "*/untrack* \\-\\> _Прекратить отслеживание ссылки_");
-
-
-
+            "Список команд:\n\n"
+                + "/list -> Вывести список отслеживаемых ссылок\n"
+                + "/start -> Зарегистрировать пользователя\n"
+                + "/track -> Начать отслеживание ссылки\n"
+                + "/untrack -> Прекратить отслеживание ссылки");
         assertThat(response)
             .usingRecursiveComparison()
             .isEqualTo(expectedAnswer);
@@ -91,13 +83,11 @@ public class HelpCommandTest {
         "\"\""
     })
     public void invalidCommandTest(String invalidCommand) {
-        var helpCommandHandler = new HelpCommand(context);
         var badUpdate = mock(Update.class);
         var message = mock(Message.class);
         when(badUpdate.message()).thenReturn(message);
         when(message.text()).thenReturn(invalidCommand);
-
-        assertThatThrownBy(() -> helpCommandHandler.handle(badUpdate))
+        assertThatThrownBy(() -> helpCommand.handle(badUpdate))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Invalid command format!");
     }
@@ -106,16 +96,11 @@ public class HelpCommandTest {
 
     @Test
     public void emptyCommandsTest() {
-        var emptyContext = mock(ApplicationContext.class);
-        BotCommandList emptyCommands = mock(BotCommandList.class);
-        when(emptyContext.getBean(BotCommandList.class)).thenReturn(emptyCommands);
-        when(emptyCommands.getCommands()).thenReturn(List.of());
+        List<Command> emptyContext = new ArrayList<>();
         var helpCommandHandler = new HelpCommand(emptyContext);
-
         var actualAnswer = helpCommandHandler.handle(update);
-
         var expectedAnswer = new SendMessage(
-            1L,"*Список команд пустой!*");
+            1L,"Список команд пустой!");
         assertThat(actualAnswer)
             .usingRecursiveComparison()
             .isEqualTo(expectedAnswer);
@@ -123,10 +108,7 @@ public class HelpCommandTest {
 
     @Test
     public void getCommandNameTest() {
-        var helpCommandHandler = new HelpCommand(context);
-
-        String actualCommandName = helpCommandHandler.command();
-
+        String actualCommandName = helpCommand.command();
         String expectedCommandName = "/help";
         assertThat(actualCommandName)
             .isEqualTo(expectedCommandName);
@@ -134,10 +116,7 @@ public class HelpCommandTest {
 
     @Test
     public void getCommandDescriptionTest() {
-        var helpCommandHandler = new HelpCommand(context);
-
-        String actualCommandDescription = helpCommandHandler.description();
-
+        String actualCommandDescription = helpCommand.description();
         String expectedCommandDescription = "Вывести окно с командами";
         assertThat(actualCommandDescription)
             .isEqualTo(expectedCommandDescription);
@@ -152,12 +131,8 @@ public class HelpCommandTest {
         " , false"
     })
     public void checkFormatTest(String command, boolean expectedCheckResult) {
-        var helpCommandHandler = new HelpCommand(context);
         when(update.message().text()).thenReturn(command);
-
-        boolean actualCheckResult = helpCommandHandler.supports(update);
-
-
+        boolean actualCheckResult = helpCommand.supports(update);
         assertThat(actualCheckResult)
             .isEqualTo(expectedCheckResult);
     }

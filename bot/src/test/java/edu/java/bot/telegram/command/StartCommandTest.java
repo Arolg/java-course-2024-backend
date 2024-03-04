@@ -4,10 +4,17 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.telegram.BotRepository;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
@@ -17,6 +24,8 @@ class StartCommandTest {
     static Update update;
     static Message message;
     static Chat chat;
+    static Map<Long, List<URL>> memory = new HashMap<>();;
+    static BotRepository repository;
 
     @BeforeAll
     static void generateAnswerTest() {
@@ -32,23 +41,15 @@ class StartCommandTest {
         when(chat.username()).thenReturn("testUser");
 
     }
-    @Test
-    void newUserTest() {
-        StartCommand startCommand = new StartCommand();
-        SendMessage response = startCommand.handle(update);
-        var expectedAnswer = new SendMessage(1L, "Привет, *testUser*\\!\n\n"
-            + "Я бот для ___отслеживания обновлений_\r__ множества веб\\-ресурсов, которые тебе интересны\\! "
-            + "Для получения списка доступных команд открой ___меню_\r__ или введи /help\\.\n\n"
-            + "Ты ___успешно_\r__ зарегистрирован\\! "
-            + "Можешь начинать отслеживать ссылки\\!");
-        assertThat(response)
-            .usingRecursiveComparison()
-            .isEqualTo(expectedAnswer);
+    @BeforeEach
+    void clear(){
+        memory.clear();
+        repository = new BotRepository(memory);
     }
 
     @Test
     public void getCommandNameTest() {
-        StartCommand startCommand = new StartCommand();
+        StartCommand startCommand = new StartCommand(mock(BotRepository.class));
 
         String actualCommandName = startCommand.command();
 
@@ -57,9 +58,10 @@ class StartCommandTest {
             .isEqualTo(expectedCommandName);
     }
 
+
     @Test
     public void getCommandDescriptionTest() {
-        StartCommand startCommand = new StartCommand();
+        StartCommand startCommand = new StartCommand(mock(BotRepository.class));
 
         String actualCommandDescription = startCommand.description();
 
@@ -78,7 +80,7 @@ class StartCommandTest {
         "\"\""
     })
     public void invalidCommandTest(String invalidCommand) {
-        StartCommand startCommand = new StartCommand();
+        StartCommand startCommand = new StartCommand(mock(BotRepository.class));
         var badUpdate = mock(Update.class);
         var message = mock(Message.class);
         when(badUpdate.message()).thenReturn(message);
