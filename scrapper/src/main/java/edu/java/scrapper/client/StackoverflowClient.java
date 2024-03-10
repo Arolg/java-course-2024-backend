@@ -1,7 +1,7 @@
-package edu.java.scrapper.configuration.client;
+package edu.java.scrapper.client;
 
-import edu.java.scrapper.configuration.client.dto.response.StackoverflowClientResponse;
-import edu.java.scrapper.configuration.exception.ErrorHandler;
+import edu.java.scrapper.dto.response.StackoverflowClientResponse;
+import edu.java.scrapper.exception.ErrorHandler;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class StackoverflowClient {

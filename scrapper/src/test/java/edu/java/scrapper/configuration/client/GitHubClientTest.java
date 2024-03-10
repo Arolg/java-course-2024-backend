@@ -2,12 +2,12 @@ package edu.java.scrapper.configuration.client;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.OffsetDateTime;
-import edu.java.scrapper.configuration.client.dto.response.GitHubClientResponse;
+import edu.java.scrapper.client.GitHubClient;
+import edu.java.scrapper.dto.response.GitHubClientResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;

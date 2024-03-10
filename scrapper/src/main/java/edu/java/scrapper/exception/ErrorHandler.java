@@ -1,4 +1,4 @@
-package edu.java.scrapper.configuration.exception;
+package edu.java.scrapper.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientResponse;
