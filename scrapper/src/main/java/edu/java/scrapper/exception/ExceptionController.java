@@ -1,15 +1,13 @@
 package edu.java.scrapper.exception;
 
 import edu.java.dto.response.ApiErrorResponse;
+import java.util.Arrays;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
-import java.util.Arrays;
 
 @RestControllerAdvice
 public class ExceptionController {

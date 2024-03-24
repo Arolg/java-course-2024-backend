@@ -7,7 +7,6 @@ import org.springframework.messaging.handler.annotation.support.MethodArgumentTy
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 
 @RestControllerAdvice
 public class BadRequestController {
@@ -22,6 +21,7 @@ public class BadRequestController {
     public ApiErrorResponse globalExceptionHandler(Exception e) {
         return handleException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     private ApiErrorResponse handleException(Exception e, HttpStatus httpStatus) {
         return ApiErrorResponse.builder()
             .description(httpStatus.getReasonPhrase())
