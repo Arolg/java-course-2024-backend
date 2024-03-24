@@ -1,4 +1,4 @@
-services:
+docker build -t task2 -f Dockerfile .services:
   postgresql:
     image: postgres:16
     ports:
