@@ -19,12 +19,11 @@ public class Bot implements AutoCloseable, UpdatesListener {
     private TelegramBot bot;
 
     private final List<Command> commandHandlers;
-    //private final BotRepository botRepository;
+
 
     public Bot(ApplicationConfig config, List<Command> commandList) {
 
         this.token = config.telegramToken();
-        //this.botRepository = new BotRepository();
         this.bot = new TelegramBot(token);
         this.commandHandlers = commandList;
         bot.execute(createMenu(commandHandlers));
