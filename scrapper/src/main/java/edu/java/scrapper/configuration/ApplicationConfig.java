@@ -18,7 +18,8 @@ public record ApplicationConfig(
 
     public record Api(
         String githubBaseUrl,
-        String stackoverflowBaseUrl
+        String stackoverflowBaseUrl,
+        String botclientBaseUrl
     ) {
     }
 

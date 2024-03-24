@@ -1,25 +1,49 @@
 package edu.java.scrapper.exception;
 
-import org.springdoc.api.ErrorMessage;
+import edu.java.dto.response.ApiErrorResponse;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import java.util.Arrays;
 
 @RestControllerAdvice
 public class ExceptionController {
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "user already registered")
-    public ErrorMessage chatAlreadyExistsException(Exception ex, WebRequest request) {
-        return new ErrorMessage(ex.getMessage());
+    @ExceptionHandler(ChatAlreadyRegisteredException.class)
+    public ApiErrorResponse chatAlreadyExistsException(Exception e) {
+        return handleException(e, HttpStatus.BAD_REQUEST);
+
     }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "does not exist")
-    public ErrorMessage chatDoesNotExistException(Exception ex, WebRequest request) {
-        return new ErrorMessage(ex.getMessage());
+
+    @ExceptionHandler(NotFoundException.class)
+    public ApiErrorResponse chatDoesNotExistException(Exception e) {
+        return handleException(e, HttpStatus.NOT_FOUND);
+
     }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "invalid args")
-    public ErrorMessage illegalArgumentException(IllegalArgumentException ex, WebRequest request) {
-        return new ErrorMessage(ex.getMessage());
+    @ExceptionHandler({
+        MethodArgumentNotValidException.class,
+        MethodArgumentTypeMismatchException.class,
+        BadRequestException.class})
+    public ApiErrorResponse illegalArgumentException(Exception e) {
+        return handleException(e, HttpStatus.BAD_REQUEST);
+
+    }
+
+    private ApiErrorResponse handleException(Exception e, HttpStatus httpStatus) {
+        return ApiErrorResponse.builder()
+            .description(httpStatus.getReasonPhrase())
+            .code(httpStatus.toString())
+            .exceptionName(e.getClass().getName())
+            .exceptionMessage(e.getMessage())
+            .stacktrace(Arrays.stream(e.getStackTrace())
+                .map(StackTraceElement::toString)
+                .toList())
+            .build();
     }
 }

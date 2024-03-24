@@ -5,9 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record LinkUpdateRequest(
-    long id,
+    @NotNull
+    Long id,
     @NotBlank
     String url,
+    @NotNull
     String description,
     @NotNull
     List<Long> tgChatIds
