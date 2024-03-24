@@ -20,6 +20,7 @@ public class Bot implements AutoCloseable, UpdatesListener {
 
     private final List<Command> commandHandlers;
 
+
     public Bot(ApplicationConfig config, List<Command> commandList) {
 
         this.token = config.telegramToken();
